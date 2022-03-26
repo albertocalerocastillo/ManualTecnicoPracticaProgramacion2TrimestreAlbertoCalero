@@ -146,7 +146,7 @@ public class ModificacionCliente implements WindowListener, ActionListener
 					txtDomicilio.setText(rs.getString("domicilioCliente"));
 					txtTelefono.setText(rs.getString("telefonoCliente"));
 					txtPoblacion.setText(rs.getString("poblacionCliente"));
-					txtCorreo.setText(rs.getString("poblacionCliente"));
+					txtCorreo.setText(rs.getString("correoElectronicoCliente"));
 				}
 				catch(SQLException sqle) {}
 				bd.desconectar();
