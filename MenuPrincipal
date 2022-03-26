@@ -1,0 +1,126 @@
+package es.studium.Farmacia;
+
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+public class MenuPrincipal implements WindowListener, ActionListener
+{
+	Frame ventana = new Frame("Menú Principal");
+	MenuBar barraMenu = new MenuBar();
+	
+	Menu mnuClientes = new Menu("Clientes");
+	MenuItem mniAltaCliente = new MenuItem("Nuevo Cliente");
+	MenuItem mniConsultaClientes = new MenuItem("Listado de Clientes");
+	MenuItem mniBajaCliente = new MenuItem("Eliminar Cliente");
+	MenuItem mniModificacionCliente = new MenuItem("Modificar Cliente");
+	
+	Menu mnuFacturas = new Menu("Facturas");
+	MenuItem mniAltaFactura = new MenuItem("Nueva Factura");
+	MenuItem mniConsultaFacturas = new MenuItem("Listado de Facturas");
+	MenuItem mniBajaFactura = new MenuItem("Eliminar Facturas");
+	MenuItem mniModificacionFactura = new MenuItem("Modificar Facturas");
+	
+	Menu mnuProductos = new Menu("Productos"); // CRUD
+	MenuItem mniAltaProducto = new MenuItem("Nuevo Producto");
+	MenuItem mniConsultaProductos = new MenuItem("Listado de Productos");
+	MenuItem mniBajaProducto = new MenuItem("Eliminar Producto");
+	MenuItem mniModificacionProducto = new MenuItem("Modificar Producto");
+
+	Label lblUsuario = new Label("XXXXXXXXXXXXXX");
+
+	public MenuPrincipal(int tipoUsuario)
+	{
+		// Listener
+		ventana.addWindowListener(this);
+		mniConsultaClientes.addActionListener(this);
+		mniAltaCliente.addActionListener(this);
+		mniBajaCliente.addActionListener(this);
+		mniModificacionCliente.addActionListener(this);
+
+		// Pantalla
+		ventana.setSize(280, 180); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
+		ventana.setResizable(false); // No Permitir redimensionar
+
+		ventana.setLayout(new FlowLayout()); // Fijar la distribucion de labels and text fields
+		if(tipoUsuario==0)
+		{
+			lblUsuario.setText("Básico");
+		}
+		else
+		{
+			lblUsuario.setText("Administrador");
+		}
+		mnuFacturas.add(mniAltaFactura);
+		mnuFacturas.add(mniConsultaFacturas);
+		if(tipoUsuario==1)
+		{
+			mnuFacturas.add(mniBajaFactura);
+			mnuFacturas.add(mniModificacionFactura);
+		}
+		barraMenu.add(mnuFacturas);
+
+		mnuProductos.add(mniAltaProducto);
+		mnuProductos.add(mniConsultaProductos);
+		if(tipoUsuario==1)
+		{
+			mnuProductos.add(mniBajaProducto);
+			mnuProductos.add(mniModificacionProducto);
+		}
+		barraMenu.add(mnuProductos);
+
+		mnuClientes.add(mniAltaCliente);
+		mnuClientes.add(mniConsultaClientes);
+		if(tipoUsuario==1)
+		{
+			mnuClientes.add(mniBajaCliente);
+			mnuClientes.add(mniModificacionCliente);
+		}
+		barraMenu.add(mnuClientes);
+		ventana.setMenuBar(barraMenu);
+
+		ventana.add(lblUsuario);
+
+		ventana.setLocationRelativeTo(null); //fijar que la ventana salga siempre en el medio
+		ventana.setVisible(true); // Mostrarla
+	}
+
+	public void windowActivated(WindowEvent we) {}
+	public void windowClosed(WindowEvent we) {}
+	public void windowClosing(WindowEvent we)
+	{
+		System.exit(0);
+	}
+	public void windowDeactivated(WindowEvent we) {}
+	public void windowDeiconified(WindowEvent we) {}
+	public void windowIconified(WindowEvent we) {}
+	public void windowOpened(WindowEvent we) {}
+
+	@Override
+	public void actionPerformed(ActionEvent evento) 
+	{
+		if(evento.getSource().equals(mniConsultaClientes))
+		{
+			new ConsultaClientes();
+		}
+		else if(evento.getSource().equals(mniAltaCliente))
+		{
+			new AltaCliente();
+		}
+		else if(evento.getSource().equals(mniBajaCliente))
+		{
+			new BajaCliente();
+		}
+		else if(evento.getSource().equals(mniModificacionCliente))
+		{
+			new ModificacionCliente();
+		}
+	}
+}
