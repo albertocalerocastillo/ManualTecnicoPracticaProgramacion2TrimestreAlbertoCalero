@@ -44,6 +44,11 @@ public class MenuPrincipal implements WindowListener, ActionListener
 		mniAltaCliente.addActionListener(this);
 		mniBajaCliente.addActionListener(this);
 		mniModificacionCliente.addActionListener(this);
+		
+		mniConsultaFacturas.addActionListener(this);
+		mniAltaFactura.addActionListener(this);
+		mniBajaFactura.addActionListener(this);
+		mniModificacionFactura.addActionListener(this);
 
 		// Pantalla
 		ventana.setSize(280, 180); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
@@ -108,7 +113,7 @@ public class MenuPrincipal implements WindowListener, ActionListener
 	{
 		if(evento.getSource().equals(mniConsultaClientes))
 		{
-			new ConsultaClientes();
+			new ConsultaFacturas();
 		}
 		else if(evento.getSource().equals(mniAltaCliente))
 		{
@@ -121,6 +126,22 @@ public class MenuPrincipal implements WindowListener, ActionListener
 		else if(evento.getSource().equals(mniModificacionCliente))
 		{
 			new ModificacionCliente();
+		}
+		if(evento.getSource().equals(mniConsultaFacturas))
+		{
+			new ConsultaFacturas();
+		}
+		else if(evento.getSource().equals(mniAltaFactura))
+		{
+			new AltaFactura();
+		}
+		else if(evento.getSource().equals(mniBajaFactura))
+		{
+			new BajaFactura();
+		}
+		else if(evento.getSource().equals(mniModificacionFactura))
+		{
+			new ModificacionFactura();
 		}
 	}
 }
