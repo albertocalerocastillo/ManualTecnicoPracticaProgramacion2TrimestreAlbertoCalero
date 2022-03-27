@@ -158,7 +158,7 @@ public class BaseDatos
 			String domicilioNuevo, String telefonoNuevo, String poblacionNuevo, String correoNuevo)
 	{
 		int resultado = 0;
-		String sentencia = "UPDATE clientes SET apellidosCliente='"+dniNuevo+"', nombreCliente = '"+nombreNuevo+"',"
+		String sentencia = "UPDATE clientes SET dniCliente='"+dniNuevo+"', nombreCliente = '"+nombreNuevo+"',"
 				+ "apellidosCliente='"+apellidosNuevo+"', domicilioCliente='"+domicilioNuevo+"', "
 						+ "telefonoCliente='"+telefonoNuevo+"', poblacionCliente='"+poblacionNuevo+"',"
 								+ "correoElectronicoCliente='"+correoNuevo+"'  WHERE idCliente = " + idCliente;
@@ -178,6 +178,120 @@ public class BaseDatos
 		return(resultado);
 	}
 
+	public String consultarFacturas()
+	{
+		String contenido = "";
+		ResultSet rs = null;
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			//Crear un objeto ResultSet para guardar lo obtenido
+			//y ejecutar la sentencia SQL
+			rs = statement.executeQuery("SELECT * FROM facturas");
+			while(rs.next()) // Si hay, al menos uno
+			{
+				contenido = contenido + rs.getInt("codigoFactura") +
+						" "+ rs.getString("fechaFactura") + " " +
+						rs.getString("totalFactura") + " " +
+						rs.getString("idClienteFK") + "\n";
+			}
+		}
+		catch (SQLException sqle)
+		{}
+		return(contenido);
+	}
+
+	public int insertarFactura(String sentencia)
+	{
+		int resultado = 0; // Éxito
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el INSERT
+			statement.executeUpdate(sentencia);
+		}
+		catch (SQLException sqle)
+		{
+			resultado = -1; // Error
+		}
+		return(resultado);
+	}
+
+	public ResultSet rellenarFacturas()
+	{
+		ResultSet rs = null;
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el SELECT
+			rs = statement.executeQuery("SELECT * FROM facturas");
+		}
+		catch (SQLException sqle)
+		{}
+		return (rs);
+	}
+
+	public int borrarFactura(int codigoFactura)
+	{
+		int resultado = 0;
+		// Devolver un 0 --> Borrado éxito
+		// Devolver un -1 --> Borrado error
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el DELETE
+			String sentencia = "DELETE FROM facturas WHERE codigoFactura="+codigoFactura;
+			statement.executeUpdate(sentencia);
+		}
+		catch (SQLException sqle)
+		{
+			resultado = -1; // Error
+		}
+		return(resultado);
+	}
+
+	public ResultSet consultarFactura(String codigoFactura)
+	{
+		ResultSet rs = null;
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el SELECT
+			rs = statement.executeQuery("SELECT * FROM facturas WHERE codigoFactura = "+codigoFactura);
+		}
+		catch (SQLException sqle)
+		{
+			System.out.println(sqle.getMessage());
+		}
+		return (rs);
+	}
+
+	public int actualizarFactura(String codigoFactura, String fechaNueva, String totalNuevo, String idClienteFK)
+	{
+		int resultado = 0;
+		String sentencia = "UPDATE facturas SET fechaFactura='"+fechaNueva+"', totalFactura = '"+totalNuevo+"',"
+								+ "idClienteFK='"+idClienteFK+"'  WHERE codigoFactura = " + codigoFactura;
+		// Devolver un 0 --> Modificación con éxito
+		// Devolver un -1 --> Modificación error
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el UPDATE
+			statement.executeUpdate(sentencia);
+		}
+		catch (SQLException sqle)
+		{
+			resultado = -1; // Error
+		}
+		return(resultado);
+	}
+	
 	public void desconectar()
 	{
 		try
