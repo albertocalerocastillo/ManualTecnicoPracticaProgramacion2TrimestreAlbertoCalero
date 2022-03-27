@@ -1,0 +1,191 @@
+package es.studium.Farmacia;
+
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class ModificacionFactura implements WindowListener, ActionListener 
+{
+	// Componentes
+	Frame ventana = new Frame("Modificación de Factura");
+	Label lblCabecera = new Label("Elegir la Factura a Modificar:");
+	Choice choFacturas = new Choice();
+	Button btnEditar = new Button("Editar");
+
+	Dialog dlgEditar = new Dialog(ventana, "Edición Factura", true);
+	Label lblCabecera2 = new Label("Editando la factura nº ");
+	Label lblCodigo = new Label("Código de Factura:");
+	Label lblFecha = new Label("Fecha:");
+	Label lblTotal = new Label("Total:");
+	Label lblIdCliente = new Label("Nº Cliente:");
+	TextField txtCodigo = new TextField(15);
+	TextField txtFecha = new TextField(15);
+	TextField txtTotal = new TextField(15);
+	TextField txtIdCliente = new TextField(15);
+	Button btnModificar = new Button("Modificar");
+	Button btnCancelar = new Button("Cancelar");
+
+	Dialog dlgMensaje = new Dialog(ventana, "Mensaje", true);
+	Label lblMensaje = new Label("XXXXXXXXXXXXXX");
+
+	BaseDatos bd = new BaseDatos();
+	ResultSet rs = null;
+
+	public ModificacionFactura()
+	{
+		// Listener
+		ventana.addWindowListener(this);
+		btnEditar.addActionListener(this);
+		btnModificar.addActionListener(this);
+		btnCancelar.addActionListener(this);
+		dlgEditar.addWindowListener(this);
+		dlgMensaje.addWindowListener(this);
+
+		// Pantalla
+		ventana.setSize(530, 150); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
+		ventana.setResizable(false); // No Permitir redimensionar
+
+		ventana.setLayout(new FlowLayout());
+		ventana.add(lblCabecera);
+		rellenarChoiceFacturas();
+		ventana.add(choFacturas);
+		ventana.add(btnEditar);
+
+		ventana.setLocationRelativeTo(null); //fijar que la ventana salga siempre en el medio
+		ventana.setVisible(true); // Mostrarla
+	}
+	private void rellenarChoiceFacturas() 
+	{
+		choFacturas.removeAll();
+		// Rellenar Choice
+		choFacturas.add("Elegir Factura...");
+		// Conectar BD
+		bd.conectar();
+		// Sacar los datos de la tabla Facturas
+		rs=bd.rellenarFacturas();
+		// Registro a registro, meterlos en el Choice
+		try 
+		{
+			while(rs.next())
+			{
+				choFacturas.add(rs.getInt("codigoFactura")+"-"+
+						rs.getString("fechaFactura")+ "-" +
+						rs.getString("totalFactura")+ "-" +
+						rs.getString("idClienteFK"));
+			}
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Desconectar BD
+		bd.desconectar();
+	}
+	public void windowActivated(WindowEvent we) {}
+	public void windowClosed(WindowEvent we) {}
+	public void windowClosing(WindowEvent we)
+	{
+		if(dlgMensaje.isActive())
+		{
+			dlgMensaje.setVisible(false);
+		}
+		else if(dlgEditar.isActive())
+		{
+			dlgEditar.setVisible(false);
+		}
+		else
+		{
+			ventana.setVisible(false);
+		}
+	}
+	public void windowDeactivated(WindowEvent we) {}
+	public void windowDeiconified(WindowEvent we) {}
+	public void windowIconified(WindowEvent we) {}
+	public void windowOpened(WindowEvent we) {}
+
+	@Override
+	public void actionPerformed(ActionEvent evento) 
+	{
+		if(evento.getSource().equals(btnEditar))
+		{
+			if(!choFacturas.getSelectedItem().equals("Elegir Factura..."))
+			{
+				String[] seleccionado = choFacturas.getSelectedItem().split("-");
+				// Conectar BD y sacar los datos de la factura seleccionada
+				bd.conectar();
+				rs = bd.consultarFactura(seleccionado[0]);
+				try
+				{
+					rs.next();
+					txtFecha.setText(rs.getString("fechaFactura"));
+					txtTotal.setText(rs.getString("totalFactura"));
+					txtIdCliente.setText(rs.getString("idClienteFK"));
+				}
+				catch(SQLException sqle) {}
+				bd.desconectar();
+				// Muestro los datos de la factura elegida
+				// en la pantalla de edición
+				dlgEditar.setSize(170, 570); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
+				dlgEditar.setResizable(false); // No Permitir redimensionar
+
+				dlgEditar.setLayout(new FlowLayout());
+				dlgEditar.add(lblCabecera2);
+				dlgEditar.add(lblCodigo);
+				txtCodigo.setEnabled(false);
+				txtCodigo.setText(seleccionado[0]); // rs.getInt("codigoFactura");
+				dlgEditar.add(txtCodigo);
+
+				dlgEditar.add(lblFecha);
+				dlgEditar.add(txtFecha);
+
+				dlgEditar.add(lblTotal);
+				dlgEditar.add(txtTotal);
+
+				dlgEditar.add(lblIdCliente);
+				dlgEditar.add(txtIdCliente);
+
+				dlgEditar.add(btnModificar);
+				dlgEditar.add(btnCancelar);
+
+				dlgEditar.setLocationRelativeTo(null);
+				dlgEditar.setVisible(true);
+			}
+		}
+		else if(evento.getSource().equals(btnModificar))
+		{
+			bd.conectar();
+			int resultado = bd.actualizarFactura(txtCodigo.getText(), txtFecha.getText(),txtTotal.getText(), txtIdCliente.getText());
+			bd.desconectar();
+			rellenarChoiceFacturas();
+			if(resultado == 0)
+			{
+				lblMensaje.setText("Modificación Correcta");
+			}
+			else
+			{
+				lblMensaje.setText("Error en Modificación");
+			}
+			dlgMensaje.setSize(180,75);
+			dlgMensaje.setLayout(new FlowLayout());
+			dlgMensaje.setResizable(false);
+			dlgMensaje.add(lblMensaje);
+			dlgMensaje.setLocationRelativeTo(null);
+			dlgMensaje.setVisible(true);
+		}
+		else if(evento.getSource().equals(btnCancelar))
+		{
+			dlgEditar.setVisible(false);
+		}
+	}
+}
