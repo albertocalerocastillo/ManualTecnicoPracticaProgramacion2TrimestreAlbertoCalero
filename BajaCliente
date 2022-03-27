@@ -113,7 +113,7 @@ public class BajaCliente implements WindowListener, ActionListener
 			btnNo.addActionListener(this);
 
 			// Pantalla
-			dlgConfirmacion.setSize(700, 100); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
+			dlgConfirmacion.setSize(670, 100); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
 			dlgConfirmacion.setResizable(false); // No Permitir redimensionar
 
 			dlgConfirmacion.setLayout(new FlowLayout());
