@@ -60,7 +60,7 @@ public class ModificacionCliente implements WindowListener, ActionListener
 		dlgMensaje.addWindowListener(this);
 
 		// Pantalla
-		ventana.setSize(570, 150); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
+		ventana.setSize(530, 150); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
 		ventana.setResizable(false); // No Permitir redimensionar
 
 		ventana.setLayout(new FlowLayout());
