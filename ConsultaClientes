@@ -34,7 +34,7 @@ public class ConsultaClientes implements WindowListener, ActionListener
 		bd.desconectar();
 		ventana.add(txaListado);
 		ventana.add(btnPdf);
-		
+
 		ventana.setLocationRelativeTo(null); //fijar que la ventana salga siempre en el medio
 		ventana.setVisible(true); // Mostrarla
 	}
@@ -53,6 +53,6 @@ public class ConsultaClientes implements WindowListener, ActionListener
 	@Override
 	public void actionPerformed(ActionEvent evento) 
 	{
-		
+
 	}
 }
