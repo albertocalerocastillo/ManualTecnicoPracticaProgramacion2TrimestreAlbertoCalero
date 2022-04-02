@@ -36,7 +36,7 @@ public class Login implements WindowListener, ActionListener
 		btnCancelar.addActionListener(this);
 		
 		// Pantalla
-		ventana.setSize(220, 150); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
+		ventana.setSize(250, 150); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
 		ventana.setResizable(false); // No Permitir redimensionar
 
 		ventana.setLayout(new FlowLayout()); // Fijar la distribucion de labels and text fields
