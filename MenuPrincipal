@@ -113,7 +113,7 @@ public class MenuPrincipal implements WindowListener, ActionListener
 	{
 		if(evento.getSource().equals(mniConsultaClientes))
 		{
-			new ConsultaFacturas();
+			new ConsultaClientes();
 		}
 		else if(evento.getSource().equals(mniAltaCliente))
 		{
