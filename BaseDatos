@@ -202,13 +202,14 @@ public class BaseDatos
 		return(contenido);
 	}
 
-	public int insertarFactura(String sentencia)
+	public int insertarFactura(String fecha, String total, String idCliente)
 	{
 		int resultado = 0; // Éxito
 		try
 		{
 			//Crear una sentencia
 			statement = connection.createStatement();
+			String sentencia = "INSERT INTO facturas VALUES(null, " + "'" + fecha + "', '" + total + "', '" + idCliente + "');";
 			// Ejecutar el INSERT
 			statement.executeUpdate(sentencia);
 		}
