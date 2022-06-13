@@ -29,12 +29,20 @@ public class BajaFactura implements WindowListener, ActionListener
 	Dialog dlgMensaje = new Dialog(ventana, "Mensaje", true);
 	Label lblMensaje = new Label("XXXXXXXXXXXXXX");
 
+	String usuario;
 	BaseDatos bd = new BaseDatos();
 	ResultSet rs = null;
 
 	// Constructor
-	public BajaFactura()
+	public BajaFactura(int tipoUsuario)
 	{
+		if (tipoUsuario==0) {
+			usuario="basico";
+			
+		}
+		else {
+			usuario="administrador";
+		}
 		// Listener
 		ventana.addWindowListener(this);
 		btnBorrar.addActionListener(this);
@@ -136,6 +144,7 @@ public class BajaFactura implements WindowListener, ActionListener
 			if(resultado==0)
 			{
 				lblMensaje.setText("Borrado con éxito");
+				bd.escritura("["+usuario+"]"+"[Baja: DELETE FROM facturas]");
 			}
 			else
 			{
