@@ -34,12 +34,20 @@ public class AltaCliente implements WindowListener, ActionListener
 
 	Dialog dlgMensaje = new Dialog(ventana, "Mensaje", true);
 	Label lblMensaje = new Label("XXXXXXXXXXXXXX");
-
+	
+	String usuario;
 	BaseDatos bd = new BaseDatos();
 
 	// Constructor
-	public AltaCliente()
+	public AltaCliente(int tipoUsuario)
 	{
+		if (tipoUsuario==0) {
+			usuario="basico";
+			
+		}
+		else {
+			usuario="administrador";
+		}
 		// Listener
 		ventana.addWindowListener(this);
 		dlgMensaje.addWindowListener(this);
@@ -107,16 +115,24 @@ public class AltaCliente implements WindowListener, ActionListener
 			String poblacion = txtPoblacion.getText();
 			String correo = txtCorreo.getText();
 			// Hacer el INSERT con esos datos
-			String sentencia = "INSERT INTO clientes VALUES(null,'"+
-					dni+"', '"+nombre+"','"+apellidos+"','"+domicilio+"', '"+telefono+"', '"+poblacion+"', '"+correo+"');";
-			int resultado = bd.insertarCliente(sentencia);
-			if(resultado == 0)
+			if(dni.length()!=0)
 			{
-				lblMensaje.setText("Alta Correcta");
+				String sentencia = "INSERT INTO clientes VALUES(null,'"+
+						dni+"', '"+nombre+"','"+apellidos+"','"+domicilio+"', '"+telefono+"', '"+poblacion+"', '"+correo+"');";
+				int resultado = bd.insertarCliente(sentencia);
+				if(resultado == 0)
+				{
+					lblMensaje.setText("Alta Correcta");
+					bd.escritura("["+usuario+"]"+"[Alta: INSERT INTO clientes]");
+				}
+				else
+				{
+					lblMensaje.setText("Error en Alta");
+				}
 			}
 			else
 			{
-				lblMensaje.setText("Error en Alta");
+				lblMensaje.setText("Hay que introducir por lo menos el DNI");
 			}
 			// Desconectar
 			bd.desconectar();
@@ -149,7 +165,7 @@ public class AltaCliente implements WindowListener, ActionListener
 		txtPoblacion.setText("");
 		txtCorreo.selectAll();
 		txtCorreo.setText("");
-		
+
 		txtDni.requestFocus();
 	}
 }
