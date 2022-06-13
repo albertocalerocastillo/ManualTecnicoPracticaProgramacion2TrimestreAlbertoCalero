@@ -46,11 +46,19 @@ public class ModificacionCliente implements WindowListener, ActionListener
 	Dialog dlgMensaje = new Dialog(ventana, "Mensaje", true);
 	Label lblMensaje = new Label("XXXXXXXXXXXXXX");
 
+	String usuario;
 	BaseDatos bd = new BaseDatos();
 	ResultSet rs = null;
 
-	public ModificacionCliente()
+	public ModificacionCliente(int tipoUsuario)
 	{
+		if (tipoUsuario==0) {
+			usuario="basico";
+			
+		}
+		else {
+			usuario="administrador";
+		}
 		// Listener
 		ventana.addWindowListener(this);
 		btnEditar.addActionListener(this);
@@ -197,9 +205,11 @@ public class ModificacionCliente implements WindowListener, ActionListener
 					txtDomicilio.getText(), txtTelefono.getText(), txtPoblacion.getText(), txtCorreo.getText());
 			bd.desconectar();
 			rellenarChoiceClientes();
+			
 			if(resultado == 0)
 			{
 				lblMensaje.setText("Modificación Correcta");
+				bd.escritura("["+usuario+"]"+"[Modificación: UPDATE clientes SET]");
 			}
 			else
 			{
