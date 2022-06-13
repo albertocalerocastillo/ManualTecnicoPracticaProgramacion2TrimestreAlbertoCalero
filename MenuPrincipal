@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 
 public class MenuPrincipal implements WindowListener, ActionListener
 {
@@ -33,11 +34,15 @@ public class MenuPrincipal implements WindowListener, ActionListener
 	MenuItem mniConsultaProductos = new MenuItem("Listado de Productos");
 	MenuItem mniBajaProducto = new MenuItem("Eliminar Producto");
 	MenuItem mniModificacionProducto = new MenuItem("Modificar Producto");
+	
+	Menu mnuAyuda = new Menu("Ayuda");
 
 	Label lblUsuario = new Label("XXXXXXXXXXXXXX");
-
+	BaseDatos bd = new BaseDatos();
+	int tipoUsuario;
 	public MenuPrincipal(int tipoUsuario)
 	{
+		this.tipoUsuario=tipoUsuario;
 		// Listener
 		ventana.addWindowListener(this);
 		mniConsultaClientes.addActionListener(this);
@@ -49,6 +54,11 @@ public class MenuPrincipal implements WindowListener, ActionListener
 		mniAltaFactura.addActionListener(this);
 		mniBajaFactura.addActionListener(this);
 		mniModificacionFactura.addActionListener(this);
+		
+		mniConsultaProductos.addActionListener(this);
+		mniAltaProducto.addActionListener(this);
+		mniBajaProducto.addActionListener(this);
+		mniModificacionProducto.addActionListener(this);
 
 		// Pantalla
 		ventana.setSize(280, 180); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
@@ -80,7 +90,6 @@ public class MenuPrincipal implements WindowListener, ActionListener
 			mnuProductos.add(mniModificacionProducto);
 		}
 		barraMenu.add(mnuProductos);
-
 		mnuClientes.add(mniAltaCliente);
 		mnuClientes.add(mniConsultaClientes);
 		if(tipoUsuario==1)
@@ -89,6 +98,7 @@ public class MenuPrincipal implements WindowListener, ActionListener
 			mnuClientes.add(mniModificacionCliente);
 		}
 		barraMenu.add(mnuClientes);
+		barraMenu.add(mnuAyuda);
 		ventana.setMenuBar(barraMenu);
 
 		ventana.add(lblUsuario);
@@ -101,6 +111,15 @@ public class MenuPrincipal implements WindowListener, ActionListener
 	public void windowClosed(WindowEvent we) {}
 	public void windowClosing(WindowEvent we)
 	{
+		String usuario;
+		if (tipoUsuario==0) {
+			usuario="basico";
+			
+		}
+		else {
+			usuario="admin";
+		}
+		bd.escritura("["+usuario+"]"+"[Salida del Sistema]");
 		System.exit(0);
 	}
 	public void windowDeactivated(WindowEvent we) {}
@@ -113,35 +132,62 @@ public class MenuPrincipal implements WindowListener, ActionListener
 	{
 		if(evento.getSource().equals(mniConsultaClientes))
 		{
-			new ConsultaClientes();
+			new ConsultaClientes(tipoUsuario);
 		}
 		else if(evento.getSource().equals(mniAltaCliente))
 		{
-			new AltaCliente();
+			new AltaCliente(tipoUsuario);
 		}
 		else if(evento.getSource().equals(mniBajaCliente))
 		{
-			new BajaCliente();
+			new BajaCliente(tipoUsuario);
 		}
 		else if(evento.getSource().equals(mniModificacionCliente))
 		{
-			new ModificacionCliente();
+			new ModificacionCliente(tipoUsuario);
 		}
 		if(evento.getSource().equals(mniConsultaFacturas))
 		{
-			new ConsultaFacturas();
+			new ConsultaFacturas(tipoUsuario);
 		}
 		else if(evento.getSource().equals(mniAltaFactura))
 		{
-			new AltaFactura();
+			new AltaFactura(tipoUsuario);
 		}
 		else if(evento.getSource().equals(mniBajaFactura))
 		{
-			new BajaFactura();
+			new BajaFactura(tipoUsuario);
 		}
 		else if(evento.getSource().equals(mniModificacionFactura))
 		{
-			new ModificacionFactura();
+			new ModificacionFactura(tipoUsuario);
+		}
+		if(evento.getSource().equals(mniConsultaProductos))
+		{
+			new ConsultaProductos(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniAltaProducto))
+		{
+			new AltaProducto(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniBajaProducto))
+		{
+			new BajaProducto(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mniModificacionProducto))
+		{
+			new ModificacionProducto(tipoUsuario);
+		}
+		else if(evento.getSource().equals(mnuAyuda))
+		{
+			try
+			{
+				Runtime.getRuntime().exec("hh.exe Ayuda.chm");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }
