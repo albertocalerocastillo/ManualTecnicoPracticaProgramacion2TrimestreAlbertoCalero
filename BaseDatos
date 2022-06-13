@@ -1,10 +1,16 @@
 package es.studium.Farmacia;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class BaseDatos
 {
@@ -21,7 +27,7 @@ public class BaseDatos
 
 	}
 
-	public void conectar()
+	public Connection conectar()
 	{
 		try
 		{
@@ -34,6 +40,7 @@ public class BaseDatos
 		{}
 		catch (SQLException sqle)
 		{}
+		return connection;
 	}
 
 	public int consultar(String sentencia)
@@ -160,8 +167,8 @@ public class BaseDatos
 		int resultado = 0;
 		String sentencia = "UPDATE clientes SET dniCliente='"+dniNuevo+"', nombreCliente = '"+nombreNuevo+"',"
 				+ "apellidosCliente='"+apellidosNuevo+"', domicilioCliente='"+domicilioNuevo+"', "
-						+ "telefonoCliente='"+telefonoNuevo+"', poblacionCliente='"+poblacionNuevo+"',"
-								+ "correoElectronicoCliente='"+correoNuevo+"'  WHERE idCliente = " + idCliente;
+				+ "telefonoCliente='"+telefonoNuevo+"', poblacionCliente='"+poblacionNuevo+"',"
+				+ "correoElectronicoCliente='"+correoNuevo+"'  WHERE idCliente = " + idCliente;
 		// Devolver un 0 --> Modificación con éxito
 		// Devolver un -1 --> Modificación error
 		try
@@ -276,7 +283,117 @@ public class BaseDatos
 	{
 		int resultado = 0;
 		String sentencia = "UPDATE facturas SET fechaFactura='"+fechaNueva+"', totalFactura = '"+totalNuevo+"',"
-								+ "idClienteFK='"+idClienteFK+"'  WHERE codigoFactura = " + codigoFactura;
+				+ "idClienteFK='"+idClienteFK+"'  WHERE codigoFactura = " + codigoFactura;
+		// Devolver un 0 --> Modificación con éxito
+		// Devolver un -1 --> Modificación error
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el UPDATE
+			statement.executeUpdate(sentencia);
+		}
+		catch (SQLException sqle)
+		{
+			resultado = -1; // Error
+		}
+		return(resultado);
+	}
+	public String consultarProductos()
+	{
+		String contenido = "";
+		ResultSet rs = null;
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			//Crear un objeto ResultSet para guardar lo obtenido
+			//y ejecutar la sentencia SQL
+			rs = statement.executeQuery("SELECT * FROM productos");
+			while(rs.next()) // Si hay, al menos uno
+			{
+				contenido = contenido + rs.getInt("codigoProducto") +
+						"-"+ rs.getString("descripcionProducto") + "-" +
+						" "+ rs.getString("precioProducto") + "-" +
+						rs.getString("cantidadProducto") + "\n";
+			}
+		}
+		catch (SQLException sqle)
+		{}
+		return(contenido);
+	}
+	public int insertarProducto(String sentencia)
+	{
+		int resultado = 0; // Éxito
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el INSERT
+			statement.executeUpdate(sentencia);
+		}
+		catch (SQLException sqle)
+		{
+			resultado = -1; // Error
+		}
+		return(resultado);
+	}
+	public ResultSet rellenarProductos()
+	{
+		ResultSet rs = null;
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el SELECT
+			rs = statement.executeQuery("SELECT * FROM productos");
+		}
+		catch (SQLException sqle)
+		{}
+		return (rs);
+	}
+
+	public int borrarProducto(int codigoProducto)
+	{
+		int resultado = 0;
+		// Devolver un 0 --> Borrado éxito
+		// Devolver un -1 --> Borrado error
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el DELETE
+			String sentencia = "DELETE FROM productos WHERE codigoProducto="+codigoProducto;
+			statement.executeUpdate(sentencia);
+		}
+		catch (SQLException sqle)
+		{
+			resultado = -1; // Error
+		}
+		return(resultado);
+	}
+	public ResultSet consultarProducto(String codigoProducto)
+	{
+		ResultSet rs = null;
+		try
+		{
+			//Crear una sentencia
+			statement = connection.createStatement();
+			// Ejecutar el SELECT
+			rs = statement.executeQuery("SELECT * FROM productos WHERE codigoProducto = "+codigoProducto);
+		}
+		catch (SQLException sqle)
+		{
+			System.out.println(sqle.getMessage());
+		}
+		return (rs);
+	}
+
+	public int actualizarProducto(String codigoProducto, String descripcionNueva, String precioNuevo, String cantidadNueva)
+	{
+		int resultado = 0;
+		String sentencia = "UPDATE productos SET descripcionProducto='"+descripcionNueva+"', precioProducto = '"+precioNuevo+"',"
+				+ "cantidadProducto='"+cantidadNueva+"'  WHERE codigoProducto = " + codigoProducto;
 		// Devolver un 0 --> Modificación con éxito
 		// Devolver un -1 --> Modificación error
 		try
@@ -293,6 +410,43 @@ public class BaseDatos
 		return(resultado);
 	}
 	
+	// Escritura
+	
+	public String escritura(String resultado) {
+		String informacion = "";
+		
+		try
+		{
+			FileWriter fw = new FileWriter ("movimientos.log", true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter salida = new PrintWriter(bw);
+			String tiempo;
+			tiempo = fechaRegistro();
+			informacion = "["+tiempo+"]" + resultado;
+			salida.println(informacion);
+			salida.close();
+			bw.close();
+			fw.close();
+		}
+		catch(IOException ioe)
+		{
+			System.out.println(ioe.getMessage());
+		}
+		
+		return (informacion);
+	}
+	
+	// Fecha y hora
+	
+	public String fechaRegistro() {
+		Date fecha;
+		SimpleDateFormat tiempo;
+		fecha = new Date();
+		tiempo = new SimpleDateFormat("dd-MM-yyyy H:mm:ss");
+		System.out.println(tiempo.format(fecha));
+		return tiempo.format(fecha);
+	}
+
 	public void desconectar()
 	{
 		try
