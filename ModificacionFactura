@@ -38,11 +38,19 @@ public class ModificacionFactura implements WindowListener, ActionListener
 	Dialog dlgMensaje = new Dialog(ventana, "Mensaje", true);
 	Label lblMensaje = new Label("XXXXXXXXXXXXXX");
 
+	String usuario;
 	BaseDatos bd = new BaseDatos();
 	ResultSet rs = null;
 
-	public ModificacionFactura()
+	public ModificacionFactura(int tipoUsuario)
 	{
+		if (tipoUsuario==0) {
+			usuario="basico";
+			
+		}
+		else {
+			usuario="administrador";
+		}
 		// Listener
 		ventana.addWindowListener(this);
 		btnEditar.addActionListener(this);
@@ -171,6 +179,7 @@ public class ModificacionFactura implements WindowListener, ActionListener
 			if(resultado == 0)
 			{
 				lblMensaje.setText("Modificación Correcta");
+				bd.escritura("["+usuario+"]"+"[Modificación: UPDATE facturas SET]");
 			}
 			else
 			{
