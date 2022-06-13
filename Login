@@ -43,7 +43,7 @@ public class Login implements WindowListener, ActionListener
 		ventana.add(lblUsuario);
 		ventana.add(txtUsuario);
 		ventana.add(lblClave);
-		txtClave.setEchoChar('*'); // Para que en vez de mostrar la clase se sustituyan los caracteres por *
+		txtClave.setEchoChar('*'); // Para que en vez de mostrar la clave se sustituyan los caracteres por *
 		ventana.add(txtClave);
 		ventana.add(btnAceptar);
 		ventana.add(btnCancelar);
@@ -95,6 +95,8 @@ public class Login implements WindowListener, ActionListener
 				// Caso afirmativo (0-1): Mostrar Menú Principal
 				new MenuPrincipal(resultado);
 				ventana.setVisible(false);
+				
+				bd.escritura("["+usuario+"]"+"[Acceso al Sistema]");
 			}
 			// Desconectar BD
 			bd.desconectar();
