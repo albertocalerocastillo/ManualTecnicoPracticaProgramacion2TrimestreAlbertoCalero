@@ -32,12 +32,20 @@ public class AltaFactura implements WindowListener, ActionListener
 	Dialog dlgMensaje = new Dialog(ventana, "Mensaje", true);
 	Label lblMensaje = new Label("XXXXXXXXXXXXXX");
 
+	String usuario;
 	BaseDatos bd = new BaseDatos();
 	ResultSet rs = null;
 
 	// Constructor
-	public AltaFactura()
+	public AltaFactura(int tipoUsuario)
 	{
+		if (tipoUsuario==0) {
+			usuario="basico";
+			
+		}
+		else {
+			usuario="administrador";
+		}
 		// Listener
 		ventana.addWindowListener(this);
 		dlgMensaje.addWindowListener(this);
@@ -131,6 +139,7 @@ public class AltaFactura implements WindowListener, ActionListener
 			if(resultado == 0)
 			{
 				lblMensaje.setText("Alta Correcta");
+				bd.escritura("["+usuario+"]"+"[Alta: INSERT INTO facturas]");
 			}
 			else
 			{
