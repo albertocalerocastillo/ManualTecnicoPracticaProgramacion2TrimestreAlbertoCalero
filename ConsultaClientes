@@ -1,6 +1,7 @@
 package es.studium.Farmacia;
 
 import java.awt.Button;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.TextArea;
@@ -8,18 +9,49 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
+import com.itextpdf.io.exceptions.IOException;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 public class ConsultaClientes implements WindowListener, ActionListener 
 {
 	Frame ventana = new Frame("Listado de Clientes");
 	TextArea txaListado = new TextArea(5,40);
 	Button btnPdf = new Button("Exportar a PDF");
+	String usuario;
 	BaseDatos bd = new BaseDatos();
+	public static final String DEST = "ConsultaCliente.pdf";
+	PdfFont font;
+	PdfWriter writer;
 
-	public ConsultaClientes()
+	Connection connection = null;
+	Statement statement = null;
+	ResultSet rs = null;
+	int tipoUsuario;
+
+	public ConsultaClientes(int tipoUsuario)
 	{
+		if (tipoUsuario==0) {
+			usuario="basico";
+
+		}
+		else {
+			usuario="administrador";
+		}
 		// Listener
 		ventana.addWindowListener(this);
+		btnPdf.addActionListener(this);
 		// Pantalla
 		ventana.setSize(350, 180); // En pixeles Width, Height. Ir probando y cambiando anchura y altura
 		ventana.setResizable(false); // No Permitir redimensionar
@@ -27,11 +59,10 @@ public class ConsultaClientes implements WindowListener, ActionListener
 		ventana.setLayout(new FlowLayout());
 		// Rellenar TextArea con la información de la BD
 		// Conectar
-		bd.conectar();
+		connection = bd.conectar();
 		// Sacar la información y meterla en el TextArea
 		txaListado.setText(bd.consultarClientes());
-		// Desconectar
-		bd.desconectar();
+		bd.escritura("["+usuario+"]"+"[Consulta: SELECT * FROM clientes]");
 		ventana.add(txaListado);
 		ventana.add(btnPdf);
 
@@ -53,6 +84,75 @@ public class ConsultaClientes implements WindowListener, ActionListener
 	@Override
 	public void actionPerformed(ActionEvent evento) 
 	{
+		if(evento.getSource().equals(btnPdf))
+		{
+			try
+			{
+				//Initialize PDF writer
+				try
+				{
+					writer = new PdfWriter(DEST);
+				} catch (FileNotFoundException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				//Initialize PDF document
+				PdfDocument pdf = new PdfDocument(writer);
+				// Initialize document
+				Document document = new Document(pdf);
+				//Add paragraph to the document
+				document.add(new Paragraph("Listado de clientes de la farmacia:"));
+				// Create a PdfFont
+				try
+				{
+					font = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+				} catch (java.io.IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try
+				{
+					String sentencia;
+					statement = connection.createStatement();
+					// Crear un objeto ResultSet para guardar lo obtenido 
+					// y ejecutar la sentencia SQL 
+					sentencia = "SELECT * FROM clientes";
+					rs = statement.executeQuery(sentencia);
+					// Mostramos en choice los clientes de la empresa
+					while(rs.next())
 
+						//Guardamos en documento PDF
+						document.add(new Paragraph((rs.getInt("idCliente")+
+								"-"+ rs.getString("dniCliente")+ "-" +
+								rs.getString("nombreCliente") + "-" +
+								rs.getString("apellidosCliente") + "-" +
+								rs.getString("domicilioCliente") + "-" +
+								rs.getString("telefonoCliente") + "-" +
+								rs.getString("poblacionCliente") + "-" +
+								rs.getString("correoElectronicoCliente")+"\n")));
+
+				} catch (SQLException e1)
+				{
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				//Close document
+				document.close();
+				// Open the new PDF document just created
+				try
+				{
+					Desktop.getDesktop().open(new File(DEST));
+				} catch (java.io.IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			catch(IOException ioe) {}		
+		}
+		//Guardamos los registros cuando pulsen PDF
+		bd.desconectar();
 	}
 }
